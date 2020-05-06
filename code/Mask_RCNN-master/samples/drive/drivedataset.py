@@ -21,26 +21,34 @@ from mrcnn import visualize
 #  Dataset
 ############################################################
 
-class BalloonDataset(utils.Dataset):
-    def load_balloon(self, dataset_dir, subset_mask, subset_image):
+class DriveDataset(utils.Dataset):
+    def load_Object(self, dataset_dir, subset_mask, subset_image):
         """Load a subset of the Balloon dataset.
         dataset_dir: Root directory of the dataset.
         subset: mask
         """
         # 添加识别类别
         # Add classes. We have only one class to add.
-        self.add_class("drive", 1, "楼房")
-        self.add_class("drive", 2, "护栏")
-        self.add_class("drive", 3, "路边设施")
-        self.add_class("drive", 4, "行人")
-        self.add_class("drive", 5, "路灯/电线杆")
-        self.add_class("drive", 6, "车行道分界线")
-        self.add_class("drive", 7, "马路")
-        self.add_class("drive", 8, "人行道")
-        self.add_class("drive", 9, "植物")
-        self.add_class("drive", 10, "汽车")
-        self.add_class("drive", 11, "矮墙")
-        self.add_class("drive", 12, "路牌/交通信号灯")
+
+        self.add_class("city", 5, "dynamic")
+        self.add_class("city", 6, "ground")
+        self.add_class("city", 7, "road")
+        self.add_class("city", 8, "sidewalk")
+        self.add_class("city", 9, "parking")
+        self.add_class("city", 10, "rail track")
+        self.add_class("city", 11, "building")
+        self.add_class("city", 12, "fence")
+        self.add_class("city", 13, "guard rail")
+        self.add_class("city", 14, "wall")
+        self.add_class("city", 15, "wall")
+        self.add_class("city", 16, "wall")
+        self.add_class("city", 17, "wall")
+        self.add_class("city", 18, "wall")
+        self.add_class("city", 19, "wall")
+        self.add_class("city", 20, "wall")
+        self.add_class("city", 21, "wall")
+        self.add_class("city", 22, "wall")
+        self.add_class("city", 23, "wall")
 
         # Train or validation dataset?
 
@@ -61,9 +69,6 @@ class BalloonDataset(utils.Dataset):
             print(files)
             i = 0;
             for file in files:
-                i = i + 1
-                if i == 10:
-                    break
                 mask = Image.imread(os.path.join(root, file))  # mask图片文件
                 mask = np.array(mask)  # mask图片转数组
                 image_path = os.path.join(dataset_dir, subset_image, file)  # 图片路径
@@ -101,7 +106,7 @@ class BalloonDataset(utils.Dataset):
         # [height, width, instance_count]
         obj_ids = image_info['obj_ids']
         obj_ids = obj_ids[1:]  # 刨除背景
-        mask = np.zeros(([image_info['height'], image_info['width'], image_info['num_obj']])) # 创建空的mask
+        mask = np.zeros(([image_info['height'], image_info['width'], image_info['num_obj']]))  # 创建空的mask
         #  根据mask_templet 在对应的层上画上实例
         for id_in_mask in obj_ids:
             area = np.where(mask_templet[:, :, 0] == id_in_mask)
@@ -141,7 +146,7 @@ class ShapesConfig(Config):
     IMAGES_PER_GPU = 1
 
     # Number of classes (including background)
-    NUM_CLASSES = 1 +12  # background + 1 shapes
+    NUM_CLASSES = 1 + 12  # background + 1 shapes
 
     # Use small images for faster training. Set the limits of the small side
     # the large side, and that determines the image shape.
@@ -162,36 +167,24 @@ class ShapesConfig(Config):
     VALIDATION_STEPS = 50
 
 
-#  封装一个训练方法
-def train(model):
+if __name__ == '__main__':
+
     """Train the model."""
     #  准备训练集
-    dataset_train = BalloonDataset()
-    dataset_train.load_balloon("D:\学习资料/机器学习\dataA/dataA", "CameraSeg", "CameraRGB")
+    dataset_train = DriveDataset()
+    dataset_train.load_Object("D:\学习资料/机器学习\dataA/dataA", "CameraSeg", "CameraRGB")
     dataset_train.prepare()
 
     #  准备验证集
-    dataset_val = BalloonDataset()
-    dataset_val.load_balloon("D:\学习资料/机器学习\dataB/dataB", "CameraSeg", "CameraRGB")
+    dataset_val = DriveDataset()
+    dataset_val.load_Object("D:\学习资料/机器学习\dataB/dataB", "CameraSeg", "CameraRGB")
     dataset_val.prepare()
-
-    # *** This training schedule is an example. Update to your needs ***
-    # Since we're using a very small dataset, and starting from
-    # COCO trained weights, we don't need to train too long. Also,
-    # no need to train all layers, just the heads should do it.
-    print("Training network heads")
-    model.train(dataset_train, dataset_val,
-                learning_rate=config.LEARNING_RATE,
-                epochs=30,
-                layers='heads')
-
-if __name__ == '__main__':
-
 
     #  项目的根目录
     ROOT_DIR = os.getcwd()
     # 模型输出路径
     MODEL_DIR = os.path.join(ROOT_DIR, "logs")
+
     # 参数类
     config = ShapesConfig()
     config.display()
@@ -213,8 +206,13 @@ if __name__ == '__main__':
         ])
     elif init_with == "imagenet":  # 使用ImageNet的权重
         model.load_weights(model.get_imagenet_weights(), by_name=True)
+
     elif init_with == "last":
         model.load_weights(model.find_last(), by_name=True)
 
     #  训练模型
-    train(model)
+    print("Training network heads")
+    model.train(dataset_train, dataset_val,
+                learning_rate=config.LEARNING_RATE,
+                epochs=30,
+                layers='heads')  #
