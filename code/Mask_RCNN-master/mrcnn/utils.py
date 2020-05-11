@@ -31,17 +31,19 @@ COCO_MODEL_URL = "https://github.com/matterport/Mask_RCNN/releases/download/v2.0
 #  Bounding Boxes
 ############################################################
 
+#  提取bound box
 def extract_bboxes(mask):
     """Compute bounding boxes from masks.
     mask: [height, width, num_instances]. Mask pixels are either 1 or 0.
 
     Returns: bbox array [num_instances, (y1, x1, y2, x2)].
     """
+    # 有多少实例就有多少行，每行四个元素，分别是实例的最大宽高的坐标值
     boxes = np.zeros([mask.shape[-1], 4], dtype=np.int32)
     for i in range(mask.shape[-1]):
         m = mask[:, :, i]
         # Bounding box.
-        horizontal_indicies = np.where(np.any(m, axis=0))[0]
+        horizontal_indicies = np.where(np.any(m, axis=0))[0] # 只要数组中有true就返回true，只能在指定纬度上进行
         vertical_indicies = np.where(np.any(m, axis=1))[0]
         if horizontal_indicies.shape[0]:
             x1, x2 = horizontal_indicies[[0, -1]]
@@ -56,7 +58,7 @@ def extract_bboxes(mask):
         boxes[i] = np.array([y1, x1, y2, x2])
     return boxes.astype(np.int32)
 
-
+#  计算Ioc，接收ground true 和 roi
 def compute_iou(box, boxes, box_area, boxes_area):
     """Calculates IoU of the given box with the array of the given boxes.
     box: 1D vector [y1, x1, y2, x2]
@@ -78,6 +80,7 @@ def compute_iou(box, boxes, box_area, boxes_area):
     return iou
 
 
+#  计算两个框的IOU
 def compute_overlaps(boxes1, boxes2):
     """Computes IoU overlaps between two sets of boxes.
     boxes1, boxes2: [N, (y1, x1, y2, x2)].
@@ -101,7 +104,7 @@ def compute_overlaps_masks(masks1, masks2):
     """Computes IoU overlaps between two sets of masks.
     masks1, masks2: [Height, Width, instances]
     """
-    
+
     # If either set of masks is empty return empty result
     if masks1.shape[-1] == 0 or masks2.shape[-1] == 0:
         return np.zeros((masks1.shape[-1], masks2.shape[-1]))
@@ -119,6 +122,7 @@ def compute_overlaps_masks(masks1, masks2):
     return overlaps
 
 
+#  非极大值抑制 ，删除冗余的ROI
 def non_max_suppression(boxes, scores, threshold):
     """Performs non-maximum suppression and returns indices of kept boxes.
     boxes: [N, (y1, x1, y2, x2)]. Notice that (y2, x2) lays outside the box.
@@ -619,13 +623,14 @@ def generate_anchors(scales, ratios, shape, feature_stride, anchor_stride):
     return boxes
 
 
+#  在不同的金字塔生成anchor
 def generate_pyramid_anchors(scales, ratios, feature_shapes, feature_strides,
                              anchor_stride):
     """Generate anchors at different levels of a feature pyramid. Each scale
     is associated with a level of the pyramid, but each ratio is used in
     all levels of the pyramid.
 
-    Returns:
+    Returns: 返回anchor 框
     anchors: [N, (y1, x1, y2, x2)]. All generated anchors in one array. Sorted
         with the same order of the given scales. So, anchors of scale[0] come
         first, then anchors of scale[1], and so on.
@@ -757,14 +762,14 @@ def compute_ap_range(gt_box, gt_class_id, gt_mask,
     """Compute AP over a range or IoU thresholds. Default range is 0.5-0.95."""
     # Default is 0.5 to 0.95 with increments of 0.05
     iou_thresholds = iou_thresholds or np.arange(0.5, 1.0, 0.05)
-    
+
     # Compute AP over range of IoU thresholds
     AP = []
     for iou_threshold in iou_thresholds:
-        ap, precisions, recalls, overlaps =\
+        ap, precisions, recalls, overlaps = \
             compute_ap(gt_box, gt_class_id, gt_mask,
-                        pred_box, pred_class_id, pred_score, pred_mask,
-                        iou_threshold=iou_threshold)
+                       pred_box, pred_class_id, pred_score, pred_mask,
+                       iou_threshold=iou_threshold)
         if verbose:
             print("AP @{:.2f}:\t {:.3f}".format(iou_threshold, ap))
         AP.append(ap)
@@ -850,6 +855,7 @@ def download_trained_weights(coco_model_path, verbose=1):
         print("... done downloading pretrained model!")
 
 
+# 标准化选框
 def norm_boxes(boxes, shape):
     """Converts boxes from pixel coordinates to normalized coordinates.
     boxes: [N, (y1, x1, y2, x2)] in pixel coordinates
