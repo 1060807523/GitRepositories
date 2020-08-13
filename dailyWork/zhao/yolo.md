@@ -16,7 +16,7 @@
 
 ### Yolo v3 的网络结构：
 
-![img](D:\GitRepositories\dailyWork\zhao\image\yolo)
+![img](D:\GitRepositories\dailyWork\zhao\image\yolo.jpg)
 
 `DBL`：	就是卷积+BN+Leaky relu。对于v3来说，BN和leaky relu已经是和卷积层不可分离的部分了(最后一层卷积除外)，共同构成了最小组件
 
@@ -56,7 +56,7 @@
 $$
 Mish(x) = x*tanh(ln(1+e^x))
 $$
-![img](D:\GitRepositories\dailyWork\zhao\image\mish)
+![img](D:\GitRepositories\dailyWork\zhao\image\mish.jpg)
 
 mish函数优于relu函数。
 
@@ -83,4 +83,32 @@ spp:平行的三个池化，然后堆叠，
 5. 非极大值抑制采用DIOU_nms
 
 ### Mosaic数据增强：
+
+
+
+
+
+
+
+## 学习率调整
+
+ReduceLROnPlateau
+
+当指标停止提升时，降低学习速率。
+
+一旦学习停止，模型通常可使学习率降低2-10倍。该重新监测数量，如果没有看到epoch的'patience'数量的改善，那么学习率就会降低。
+
+```python
+reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2,
+                              patience=5, min_lr=0.001)
+```
+
+- monitor：要监测的数量。
+- factor：学习速率降低的因素。new_lr= lr * factor
+- 耐心：没有提升的时代数，之后学习率将降低。
+- verbose：int。0：安静，1：更新消息。
+- 模式：{auto，min，max}之一。在最小模式下，当监测量停止下降时，lr将减少；在最大模式下，当监测数量停止增加时，减少减少；在自动模式下，从监测数量的名称自动预测方向。
+- min_delta：对于测量新的最优化的阀值，仅关注重大变化。
+- cooldown：在学习速率被降低之后，重新恢复正常操作之前等待的epoch数量。
+- min_lr：学习率的下限。
 

@@ -373,20 +373,13 @@ ROIs kept after non-maximum suppression (training and inference)
 
        [https://blog.csdn.net/qq_37577735/article/details/80041586#%E5%8F%8C%E7%BA%BF%E6%80%A7%E6%8F%92%E5%80%BC%E6%B3%95](https://blog.csdn.net/qq_37577735/article/details/80041586#双线性插值法)
 
-       ![img](image/70)
+       ![img](image/70.jpg)
 
        求P点值，首先根据Q12 Q22,的值得到一条直线，把P的x坐标带入算出得到R2的值
 
        同样的得到R1的值，在根据R1，R2的值得到一条直线函数，然后计算P的点值。
 
      
-
-
-### mask
-
-
-
-
 
 
 

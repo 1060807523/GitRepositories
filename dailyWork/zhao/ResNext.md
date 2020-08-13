@@ -4,7 +4,7 @@
 
 基本Resedual block 块，该块的模型由两个层组成，输入层和输出要相加。示意图如下：
 
-![img](D:\GitRepositories\dailyWork\zhao\image\webp)
+![img](D:\GitRepositories\dailyWork\zhao\image\webp.jpg)
 
 ​																				图1.残差基本单元结构
 
@@ -22,7 +22,7 @@ weight 代表卷积层，BN是归一化层。
 
 上面的图片只是两层的残差单元，对应于下图中左边那个。
 
-![残差单元](D:\GitRepositories\dailyWork\zhao\image\watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxNzYwNzY3,size_16,color_FFFFFF,t_70)
+![残差单元](D:\GitRepositories\dailyWork\zhao\image\watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxNzYwNzY3,size_16,color_FFFFFF,t_70.jpg)
 
 ​													图3. 两种残差结构（又叫残差单元）
 
@@ -41,7 +41,7 @@ resnet101中的结构：
 
 
 
-![img](D:\GitRepositories\dailyWork\zhao\image\watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhb2NodW5jaHU=,size_16,color_FFFFFF,t_70)
+![img](D:\GitRepositories\dailyWork\zhao\image\watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhb2NodW5jaHU=,size_16,color_FFFFFF,t_70.jpg)
 
 
 
@@ -212,4 +212,4 @@ def resnet_graph(input_image, architecture, stage5=False, train_bn=True):
 
 ### resNeXt
 
-resNext 在resnet的基础上增加了宽度，
+resNext 在resnet的基础上增加了宽度。
